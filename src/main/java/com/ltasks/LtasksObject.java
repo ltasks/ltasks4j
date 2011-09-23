@@ -62,7 +62,7 @@ public class LtasksObject {
 	 * 
 	 * @return the source text or null
 	 */
-	public String getText() {
+	public String getSourceText() {
 		return mSourceText;
 	}
 

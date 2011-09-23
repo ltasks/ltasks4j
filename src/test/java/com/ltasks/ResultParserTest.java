@@ -35,7 +35,7 @@ public class ResultParserTest {
 				.getResourceAsStream("com/ltasks/sample1.xml"), true);
 
 		assertEquals("Ele se encontrará com José em Brasília.",
-				result.getText());
+				result.getSourceText());
 		assertEquals(2, result.getNamedEntities().size());
 		
 		assertTrue(result.isProcessedOk());
@@ -60,7 +60,7 @@ public class ResultParserTest {
 		LtasksObject result = ResultParser.parse(getClass().getClassLoader()
 				.getResourceAsStream("com/ltasks/sampleNoText.xml"), true);
 
-		assertNull(result.getText());
+		assertNull(result.getSourceText());
 		assertEquals(2, result.getNamedEntities().size());
 
 		NamedEntity e0 = result.getNamedEntities().get(0);
@@ -83,7 +83,7 @@ public class ResultParserTest {
 		LtasksObject result = ResultParser.parse(getClass().getClassLoader()
 				.getResourceAsStream("com/ltasks/sampleNoEntities.xml"), true);
 
-		assertEquals("Teste", result.getText());
+		assertEquals("Teste", result.getSourceText());
 		assertEquals(0, result.getNamedEntities().size());
 
 	}
@@ -94,7 +94,7 @@ public class ResultParserTest {
 		LtasksObject result = ResultParser.parse(getClass().getClassLoader()
 				.getResourceAsStream("com/ltasks/error.xml"), false);
 
-		assertNull(result.getText());
+		assertNull(result.getSourceText());
 		assertNotNull(result.getMessage());
 		assertEquals(0, result.getNamedEntities().size());
 

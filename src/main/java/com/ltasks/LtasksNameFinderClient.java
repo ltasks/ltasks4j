@@ -125,7 +125,7 @@ public class LtasksNameFinderClient extends BaseClient {
 			ParserConfigurationException, SAXException {
 
 		// just a sample usage...
-		
+
 		System.out.println("Initializing client...");
 		LtasksNameFinderClient client = new LtasksNameFinderClient(
 				"b2c4cf5c-52d3-4fef-ac9b-67dbe6b5e52d"); // the apikey from
@@ -150,6 +150,33 @@ public class LtasksNameFinderClient extends BaseClient {
 		result = client.processHtml(data);
 		System.out.println("HTML annotated. The result is:");
 		System.out.println(result);
+
+		System.out.println("Vamos tentar acessar os resultados");
+
+		if (result.isProcessedOk()) {
+			System.out.println("Foi possivel anotar o texto.");
+			if (result.getMessage() != null) {
+				// o servidor enviu uma mensagem
+				System.out.println("Mensagem do servidor: "
+						+ result.getMessage());
+			}
+			if (result.getSourceText() != null) {
+				System.out.println("Texto fonte normalizado: "
+						+ result.getSourceText());
+			}
+			if (result.getNamedEntities() != null) {
+				for (NamedEntity entity : result.getNamedEntities()) {
+					System.out.println("  tipo: " + entity.getType().value()
+							+ " inicio: " + entity.getBegin() + " fim: "
+							+ entity.getEnd() + " texto: "
+							+ entity.getText());
+				}
+			}
+		} else {
+			System.out
+					.println("Houve um erro! Vamos tentar obter a mensagem de erro.");
+			System.out.println("Mensagem do servidor: " + result.getMessage());
+		}
 
 	}
 }
