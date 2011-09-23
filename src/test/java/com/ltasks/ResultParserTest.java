@@ -34,7 +34,7 @@ public class ResultParserTest {
 		LtasksObject result = ResultParser.parse(getClass().getClassLoader()
 				.getResourceAsStream("com/ltasks/sample1.xml"), true);
 
-		assertEquals("Ele se encontrará com José em Brasília.",
+		assertEquals("Ele se encontra com Daniel em Minas Gerais.",
 				result.getSourceText());
 		assertEquals(2, result.getNamedEntities().size());
 		
@@ -43,15 +43,15 @@ public class ResultParserTest {
 		NamedEntity e0 = result.getNamedEntities().get(0);
 		NamedEntity e1 = result.getNamedEntities().get(1);
 
-		assertEquals("José", e0.getText());
+		assertEquals("Daniel", e0.getText());
 		assertEquals(NerType.PERSON, e0.getType());
-		assertEquals(22, e0.getBegin());
+		assertEquals(20, e0.getBegin());
 		assertEquals(26, e0.getEnd());
 
-		assertEquals("Brasília", e1.getText());
+		assertEquals("Minas Gerais", e1.getText());
 		assertEquals(NerType.PLACE, e1.getType());
 		assertEquals(30, e1.getBegin());
-		assertEquals(38, e1.getEnd());
+		assertEquals(42, e1.getEnd());
 	}
 
 	@Test
@@ -63,18 +63,6 @@ public class ResultParserTest {
 		assertNull(result.getSourceText());
 		assertEquals(2, result.getNamedEntities().size());
 
-		NamedEntity e0 = result.getNamedEntities().get(0);
-		NamedEntity e1 = result.getNamedEntities().get(1);
-
-		assertEquals("José", e0.getText());
-		assertEquals(NerType.PERSON, e0.getType());
-		assertEquals(22, e0.getBegin());
-		assertEquals(26, e0.getEnd());
-
-		assertEquals("Brasília", e1.getText());
-		assertEquals(NerType.PLACE, e1.getType());
-		assertEquals(30, e1.getBegin());
-		assertEquals(38, e1.getEnd());
 	}
 
 	@Test
