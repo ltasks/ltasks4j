@@ -42,7 +42,7 @@ O ltasks4j requer a biblioteca Apache HTTP Client, que pode ser [obtida aqui](ht
 <dependency>
 	<groupId>com.ltasks</groupId>
 	<artifactId>ltasks4j</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 </dependency>
 ```
 
