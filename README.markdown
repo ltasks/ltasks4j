@@ -29,7 +29,7 @@ O ltasks4j requer a biblioteca Apache HTTP Client, que pode ser [obtida aqui](ht
 ```xml
 <repository>
 	<id>ltasks-snapshots</id>
-	<url>http://ltasks.com/repo/release/snapshot/</url>
+	<url>http://ltasks.com/repo/snapshot/</url>
 	<snapshots>
 		<enabled>true</enabled>
 	</snapshots>
@@ -70,7 +70,7 @@ LtasksObject result = client.processText("Ele se encontrará com José em Brasí
 
 ```java
 result = client.processUrl(new URL("http://pt.wikipedia.org/wiki/Cazuza"));
-result = client.processHtml(new URL("<html><p>Ele se encontrará com José em Brasília.</p></html>"));
+result = client.processHtml("<html><p>Ele se encontrará com José em Brasília.</p></html>");
 ```
 
 * Acessar os resultados é simples:
