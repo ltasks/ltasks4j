@@ -24,7 +24,7 @@ O ltasks4j requer a biblioteca Apache HTTP Client, que pode ser [obtida aqui](ht
 </repository>
 ```
 
-* Se desejar usar versões snpashot inclua também:
+* Se desejar usar versões snapshot inclua também:
 
 ```xml
 <repository>
@@ -42,7 +42,7 @@ O ltasks4j requer a biblioteca Apache HTTP Client, que pode ser [obtida aqui](ht
 <dependency>
 	<groupId>com.ltasks</groupId>
 	<artifactId>ltasks4j</artifactId>
-	<version>>${project.version}</version>
+	<version>0.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
