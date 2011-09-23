@@ -6,6 +6,22 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>LTasks Java Client</name>
 
+	<distributionManagement>
+		<downloadUrl>http://ccsl.ime.usp.br/cogroo/maven</downloadUrl>
+		<repository>
+			<id>ltasks</id>
+			<uniqueVersion>false</uniqueVersion>
+			<url>scp://ltasks@ltasks.com/home/ltasks/public_html/repo/release</url>
+			<layout>default</layout>
+		</repository>
+		<snapshotRepository>
+			<id>ltasks</id>
+			<uniqueVersion>false</uniqueVersion>
+			<url>scp://ltasks@ltasks.com/home/ltasks/public_html/repo/snapshot</url>
+			<layout>default</layout>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>commons-httpclient</groupId>
@@ -20,6 +36,13 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>1.0-beta-7</version>
+			</extension>
+		</extensions>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
