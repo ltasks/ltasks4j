@@ -133,7 +133,7 @@ public class LtasksNameFinderClient extends BaseClient {
 
 		System.out.println("Client started. Will do some annotation.");
 
-		String data = "Ele se encontrará com José em Brasília.";
+		String data = "Ele se encontrar√° com Jos√© em Bras√≠lia.";
 		System.out.println("Will annotate the text: " + data);
 		LtasksObject result = client.processText(data);
 		System.out.println("Text annotated. The result is:");
@@ -145,7 +145,7 @@ public class LtasksNameFinderClient extends BaseClient {
 		System.out.println("URL annotated. The result is:");
 		System.out.println(result);
 
-		data = "<html><p>Ele se encontrará com José em Brasília.</p></html>";
+		data = "<html><p>Ele se encontrar√° com Jos√© em Bras√≠lia.</p></html>";
 		System.out.println("Will annotate a HTML: " + data);
 		result = client.processHtml(data);
 		System.out.println("HTML annotated. The result is:");
