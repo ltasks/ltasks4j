@@ -20,13 +20,13 @@ package com.ltasks;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
+import java.util.zip.GZIPInputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.xml.sax.SAXException;
 
 /**
@@ -42,8 +42,11 @@ public abstract class BaseClient {
 
 	private boolean mIsIncludeSource;
 
+	private boolean mIsGZipContentEncoding;
+
 	/**
-	 * Creates a new BaseClient.
+	 * Creates a new BaseClient. By default will not include text source, and
+	 * communication not gzipped.
 	 * 
 	 * @param aApiKey
 	 *            the user api key
@@ -52,7 +55,7 @@ public abstract class BaseClient {
 	 *             representation.
 	 */
 	public BaseClient(String aApiKey) throws IllegalArgumentException {
-		this(aApiKey, true);
+		this(aApiKey, true, false);
 	}
 
 	/**
@@ -61,18 +64,22 @@ public abstract class BaseClient {
 	 * @param aApiKey
 	 *            the user api key
 	 * @param aIsIncludeSource
-	 *            if to include the source text
+	 *            if to include the source text (default is true)
+	 * @param aIsGZipContentEncoding
+	 *            if true will gzip contents to communicate with server (default
+	 *            is true)
 	 * @throws IllegalArgumentException
 	 *             the api key does not conform with the standard
 	 *             representation.
 	 */
-	public BaseClient(String aApiKey, boolean aIsIncludeSource)
-			throws IllegalArgumentException {
+	public BaseClient(String aApiKey, boolean aIsIncludeSource,
+			boolean aIsGZipContentEncoding) throws IllegalArgumentException {
 		validateApiKey(aApiKey);
 		mApiKey = aApiKey;
 		client = new HttpClient();
 		client.getParams().setParameter("http.useragent", "ltasks4j");
 		mIsIncludeSource = aIsIncludeSource;
+		mIsGZipContentEncoding = aIsGZipContentEncoding;
 	}
 
 	/**
@@ -109,14 +116,17 @@ public abstract class BaseClient {
 	 */
 	protected LtasksObject post(NameValuePair data) throws HttpException,
 			IOException, IllegalArgumentException {
-		PostMethod method = new PostMethod(getResourceUrl());
+		GZipPostMethod method = new GZipPostMethod(getResourceUrl(),
+				mIsGZipContentEncoding);
 
 		// Set input content type
 		method.setRequestHeader("Content-Type",
-				"application/x-www-form-urlencoded");
+				"application/x-www-form-urlencoded; charset=utf-8");
 
 		// Set response/output format
 		method.setRequestHeader("Accept", "application/xml");
+
+		method.setRequestHeader("Accept-Charset", "utf-8");
 
 		NameValuePair[] body = new NameValuePair[] {
 				data,
@@ -125,18 +135,29 @@ public abstract class BaseClient {
 						Boolean.toString(mIsIncludeSource)) };
 
 		method.setRequestBody(body);
+		method.setContentChunked(true);
+
+		if (mIsGZipContentEncoding) {
+			method.setRequestHeader("Accept-Encoding", "gzip");
+			method.setRequestHeader("Content-Encoding", "gzip");
+		}
 
 		boolean processedOk = false;
 		int code = client.executeMethod(method);
 		if (code == 200) {
 			processedOk = true;
 		}
-		InputStream is = method.getResponseBodyAsStream();
+		InputStream is;
+		if (method.getResponseHeader("Content-Encoding") != null && method.getResponseHeader("Content-Encoding").getValue().contains("gzip")) {
+			is = new GZIPInputStream(method.getResponseBodyAsStream());
+		} else {
+			is = method.getResponseBodyAsStream();
+		}
+
 		LtasksObject result = null;
 		if (is != null) {
 			try {
-				result = ResultParser.parse(method.getResponseBodyAsStream(),
-						processedOk);
+				result = ResultParser.parse(is, processedOk);
 			} catch (ParserConfigurationException e) {
 				throw new IllegalArgumentException(
 						"Got an invalid response from server.", e);
@@ -148,6 +169,8 @@ public abstract class BaseClient {
 			result = new LtasksObject(null, "Failed to process request. Code: "
 					+ code, false, null);
 		}
+		is.close();
+		method.releaseConnection();
 		return result;
 	}
 }

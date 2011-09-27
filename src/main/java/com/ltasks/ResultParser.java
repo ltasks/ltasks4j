@@ -28,6 +28,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -118,7 +119,12 @@ public class ResultParser extends DefaultHandler {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser parser = factory.newSAXParser();
 		ResultParser handler = new ResultParser();
-		parser.parse(aXML, handler);
+		
+		InputSource inputSource = new InputSource(aXML);
+		//inputSource.setSystemId("http://www.oreilly.com");
+		//inputSource.setEncoding("UTF-8");
+		
+		parser.parse(inputSource, handler);
 		return handler.getObject(aIsOk);
 	}
 
