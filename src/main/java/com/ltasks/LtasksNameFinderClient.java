@@ -127,9 +127,6 @@ public class LtasksNameFinderClient extends BaseClient {
 	public static void main(String[] args) throws HttpException, IOException,
 			ParserConfigurationException, SAXException, InterruptedException {
 
-		while(true) {
-		// just a sample usage...
-
 		System.out.println("Initializing client...");
 		LtasksNameFinderClient client = new LtasksNameFinderClient(
 				"b2c4cf5c-52d3-4fef-ac9b-67dbe6b5e52d", true, true); // the
@@ -144,12 +141,12 @@ public class LtasksNameFinderClient extends BaseClient {
 		LtasksObject result = client.processText(data);
 		System.out.println("Text annotated. The result is:");
 		System.out.println(result);
-		
-		  data = "http://pt.wikipedia.org/wiki/Cazuza";
-		  System.out.println("Will annotate a URL: " + data); result =
-		  client.processUrl(new URL(data));
-		  System.out.println("URL annotated. The result is:");
-		  System.out.println(result);
+
+		data = "http://pt.wikipedia.org/wiki/Cazuza";
+		System.out.println("Will annotate a URL: " + data);
+		result = client.processUrl(new URL(data));
+		System.out.println("URL annotated. The result is:");
+		System.out.println(result);
 
 		data = "<html><p>Ele se encontrará com José em Brasília.</p></html>";
 		System.out.println("Will annotate a HTML: " + data);
@@ -161,7 +158,7 @@ public class LtasksNameFinderClient extends BaseClient {
 
 		if (result.isProcessedOk()) {
 			System.out.println("Foi possivel anotar o texto.");
-			if (result.getMessage() != null) { // o servidor enviu uma mensagem
+			if (result.getMessage() != null) { 
 				System.out.println("Mensagem do servidor: "
 						+ result.getMessage());
 			}
@@ -181,10 +178,8 @@ public class LtasksNameFinderClient extends BaseClient {
 					.println("Houve um erro! Vamos tentar obter a mensagem de erro.");
 			System.out.println("Mensagem do servidor: " + result.getMessage());
 		}
-		
+
 		client.processUrl(new URL("http://pttttt.wikipeeeeedia.org/wiki/Cazuza"));
-		Thread.sleep(20000);
-		}
-		 
+
 	}
 }
