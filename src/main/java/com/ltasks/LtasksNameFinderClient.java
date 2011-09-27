@@ -32,8 +32,8 @@ public class LtasksNameFinderClient extends BaseClient {
 	private static final String RESOURCE = "http://api.ltasks.com/app/v0b/ner";
 
 	/**
-	 * Creates a new Name Finder client. By default will not include text
-	 * source, and communication not gzipped.
+	 * Creates a new Name Finder client. By default will include text
+	 * source, and communication will be gzipped.
 	 * 
 	 * @param aApiKey
 	 *            the user api key
@@ -54,15 +54,15 @@ public class LtasksNameFinderClient extends BaseClient {
 	 * @param aIsIncludeSourceText
 	 *            if true will include the normalized text to the response.
 	 *            Default is true.
-	 * @param aIsGZipContentEncoding
+	 * @param aIsUseGZipEncoding
 	 *            if true the request and response will be gzipped
 	 * @throws IllegalArgumentException
 	 *             the api key does not conform with the standard
 	 *             representation.
 	 */
 	public LtasksNameFinderClient(String aApiKey, boolean aIsIncludeSourceText,
-			boolean aIsGZipContentEncoding) throws IllegalArgumentException {
-		super(aApiKey, aIsIncludeSourceText, aIsGZipContentEncoding);
+			boolean aIsUseGZipEncoding) throws IllegalArgumentException {
+		super(aApiKey, aIsIncludeSourceText, aIsUseGZipEncoding);
 	}
 
 	@Override

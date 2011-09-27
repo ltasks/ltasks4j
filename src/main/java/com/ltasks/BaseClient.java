@@ -55,7 +55,7 @@ public abstract class BaseClient {
 	 *             representation.
 	 */
 	public BaseClient(String aApiKey) throws IllegalArgumentException {
-		this(aApiKey, true, false);
+		this(aApiKey, true, true);
 	}
 
 	/**
