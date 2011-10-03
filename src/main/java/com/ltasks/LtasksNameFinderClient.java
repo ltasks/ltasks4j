@@ -19,6 +19,7 @@ package com.ltasks;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -26,14 +27,18 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.NameValuePair;
 import org.xml.sax.SAXException;
 
+import com.ltasks.htmlfilteroptions.HtmlFilter;
+import com.ltasks.htmlfilteroptions.HtmlFilterOptions;
+import com.ltasks.htmlfilteroptions.SimpleXPath;
+
 public class LtasksNameFinderClient extends BaseClient {
 
 	/** the NER resource URL */
 	private static final String RESOURCE = "http://api.ltasks.com/app/v0b/ner";
 
 	/**
-	 * Creates a new Name Finder client. By default will include text
-	 * source, and communication will be gzipped.
+	 * Creates a new Name Finder client. By default will include text source,
+	 * and communication will be gzipped.
 	 * 
 	 * @param aApiKey
 	 *            the user api key
@@ -85,7 +90,29 @@ public class LtasksNameFinderClient extends BaseClient {
 	 */
 	public LtasksObject processUrl(URL aUrl) throws HttpException, IOException,
 			IllegalArgumentException {
-		return post(new NameValuePair("url", aUrl.toString()));
+		return post(Collections.singletonList(new NameValuePair("url", aUrl
+				.toString())));
+	}
+
+	/**
+	 * Annotate a filtered normalized text from a URL
+	 * 
+	 * @param aUrl
+	 *            the URL
+	 * @param filterOptions
+	 *            the html filter options
+	 * @return the annotation object
+	 * @throws HttpException
+	 *             Got a protocol error.
+	 * @throws IOException
+	 *             Failed to communicate or to read the result.
+	 * @throws IllegalArgumentException
+	 *             The data received from server was invalid.
+	 */
+	public LtasksObject processUrl(URL aUrl, HtmlFilterOptions filterOptions)
+			throws HttpException, IOException, IllegalArgumentException {
+		return post(createNameValuePairs(
+				new NameValuePair("url", aUrl.toString()), filterOptions));
 	}
 
 	/**
@@ -103,7 +130,26 @@ public class LtasksNameFinderClient extends BaseClient {
 	 */
 	public LtasksObject processHtml(String aHtml) throws HttpException,
 			IOException {
-		return post(new NameValuePair("html", aHtml));
+		return post(Collections.singletonList(new NameValuePair("html", aHtml)));
+	}
+
+	/**
+	 * Annotate a normalized text from a HTML
+	 * 
+	 * @param aHtml
+	 *            the HTML
+	 * @return the annotation object
+	 * @throws HttpException
+	 *             Got a protocol error.
+	 * @throws IOException
+	 *             Failed to communicate or to read the result.
+	 * @throws IllegalArgumentException
+	 *             The data received from server was invalid.
+	 */
+	public LtasksObject processHtml(String aHtml,
+			HtmlFilterOptions filterOptions) throws HttpException, IOException {
+		return post(createNameValuePairs(new NameValuePair("html", aHtml),
+				filterOptions));
 	}
 
 	/**
@@ -121,50 +167,61 @@ public class LtasksNameFinderClient extends BaseClient {
 	 */
 	public LtasksObject processText(String aText) throws HttpException,
 			IOException {
-		return post(new NameValuePair("text", aText));
+		return post(Collections.singletonList(new NameValuePair("text", aText)));
 	}
 
 	public static void main(String[] args) throws HttpException, IOException,
 			ParserConfigurationException, SAXException, InterruptedException {
 
 		System.out.println("Initializing client...");
+		
+		// Create a client using the apikey from documentation.
 		LtasksNameFinderClient client = new LtasksNameFinderClient(
-				"b2c4cf5c-52d3-4fef-ac9b-67dbe6b5e52d", true, true); // the
-																		// apikey
-																		// from
-		// documentation.
+				"b2c4cf5c-52d3-4fef-ac9b-67dbe6b5e52d", true, true);
+		
 
 		System.out.println("Client started. Will do some annotation.");
 
 		String data = "Ele se encontrará com José em Brasília.";
+
 		System.out.println("Will annotate the text: " + data);
 		LtasksObject result = client.processText(data);
-		System.out.println("Text annotated. The result is:");
-		System.out.println(result);
+		System.out.println("Text annotated. The result is: \n[" + result + "]");
 
 		data = "http://pt.wikipedia.org/wiki/Cazuza";
 		System.out.println("Will annotate a URL: " + data);
 		result = client.processUrl(new URL(data));
-		System.out.println("URL annotated. The result is:");
-		System.out.println(result);
+		System.out.println("URL annotated. The result is: \n[" + result + "]");
 
-		data = "<html><p>Ele se encontrará com José em Brasília.</p></html>";
+		data = "<html>" + "<body>"
+				+ "<p id='a'>Ele se encontrará com José em Brasília.</p> "
+				+ "<div class='anId'>"
+				+ "<p id='a'>Ela se encontrará com Maria em São Paulo.</p>"
+				+ "<p id='b'>Maria se encontrará com José na Bahia.</p>"
+				+ "</div>" + "</body>" + "</html>";
 		System.out.println("Will annotate a HTML: " + data);
-		result = client.processHtml(data);
-		System.out.println("HTML annotated. The result is:");
-		System.out.println(result);
+		HtmlFilterOptions options = new HtmlFilterOptions();
+		options.setFilter(HtmlFilter.none);
+		// lets select only the div
+		options.setInclude(Collections.singletonList(new SimpleXPath("div",
+				"class", "anId")));
+		// but exclude the paragraph with id a. We could create the list and the
+		// object here, but lets try using the SimpleXPath parser
+		options.setExclude(SimpleXPath.parse("//p[@id='a']"));
+
+		result = client.processHtml(data, options);
 
 		System.out.println("Vamos tentar acessar os resultados");
 
 		if (result.isProcessedOk()) {
 			System.out.println("Foi possivel anotar o texto.");
-			if (result.getMessage() != null) { 
+			if (result.getMessage() != null) {
 				System.out.println("Mensagem do servidor: "
 						+ result.getMessage());
 			}
 			if (result.getSourceText() != null) {
-				System.out.println("Texto fonte normalizado: "
-						+ result.getSourceText());
+				System.out.println("Texto fonte normalizado: \n["
+						+ result.getSourceText() + "]");
 			}
 			if (result.getNamedEntities() != null) {
 				for (NamedEntity entity : result.getNamedEntities()) {
@@ -178,8 +235,6 @@ public class LtasksNameFinderClient extends BaseClient {
 					.println("Houve um erro! Vamos tentar obter a mensagem de erro.");
 			System.out.println("Mensagem do servidor: " + result.getMessage());
 		}
-
-		client.processUrl(new URL("http://pttttt.wikipeeeeedia.org/wiki/Cazuza"));
 
 	}
 }

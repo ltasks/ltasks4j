@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ltasks</groupId>
 	<artifactId>ltasks4j</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>LTasks Java Client</name>
 
 	<distributionManagement>
-		<downloadUrl>http://ccsl.ime.usp.br/cogroo/maven</downloadUrl>
+		<downloadUrl>http://ltasks.com/repo</downloadUrl>
 		<repository>
 			<id>ltasks</id>
 			<uniqueVersion>false</uniqueVersion>

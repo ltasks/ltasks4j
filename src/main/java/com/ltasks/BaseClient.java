@@ -19,6 +19,8 @@ package com.ltasks;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.zip.GZIPInputStream;
 
@@ -28,6 +30,9 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.NameValuePair;
 import org.xml.sax.SAXException;
+
+import com.ltasks.htmlfilteroptions.HtmlFilterOptions;
+import com.ltasks.htmlfilteroptions.SimpleXPath;
 
 /**
  * BaseClient implements common methods that should be used by different tasks.
@@ -77,7 +82,7 @@ public abstract class BaseClient {
 		validateApiKey(aApiKey);
 		mApiKey = aApiKey;
 		client = new HttpClient();
-		client.getParams().setParameter("http.useragent", "ltasks4j");
+		client.getParams().setParameter("http.useragent", "ltasks4j/0.0.3");
 		mIsIncludeSource = aIsIncludeSource;
 		mIsGZipContentEncoding = aIsGZipContentEncoding;
 	}
@@ -114,7 +119,7 @@ public abstract class BaseClient {
 	 * @throws IllegalArgumentException
 	 *             The data received from server was invalid.
 	 */
-	protected LtasksObject post(NameValuePair data) throws HttpException,
+	protected LtasksObject post(List<NameValuePair> data) throws HttpException,
 			IOException, IllegalArgumentException {
 		GZipPostMethod method = new GZipPostMethod(getResourceUrl(),
 				mIsGZipContentEncoding);
@@ -127,14 +132,14 @@ public abstract class BaseClient {
 		method.setRequestHeader("Accept", "application/xml");
 
 		method.setRequestHeader("Accept-Charset", "utf-8");
+		
+		List<NameValuePair> body = new ArrayList<NameValuePair>(data.size() + 2);
+		body.addAll(data);
+		body.add(new NameValuePair("apikey", mApiKey));
+		body.add(new NameValuePair("includeSourceText",
+						Boolean.toString(mIsIncludeSource)));
 
-		NameValuePair[] body = new NameValuePair[] {
-				data,
-				new NameValuePair("apikey", mApiKey),
-				new NameValuePair("includeSourceText",
-						Boolean.toString(mIsIncludeSource)) };
-
-		method.setRequestBody(body);
+		method.setRequestBody(body.toArray(new NameValuePair[body.size()]));
 		method.setContentChunked(true);
 
 		if (mIsGZipContentEncoding) {
@@ -172,5 +177,23 @@ public abstract class BaseClient {
 		is.close();
 		method.releaseConnection();
 		return result;
+	}
+	
+	protected List<NameValuePair> createNameValuePairs(
+			NameValuePair data, HtmlFilterOptions filterOptions) {
+		List<NameValuePair> list = new ArrayList<NameValuePair>(4);
+		
+		list.add(data);
+		if(filterOptions.getInclude() != null) {
+			list.add(new NameValuePair("include", SimpleXPath.toString(filterOptions.getInclude())));
+		}
+		if(filterOptions.getExclude() != null) {
+			list.add(new NameValuePair("exclude", SimpleXPath.toString(filterOptions.getExclude())));
+		}
+		if(filterOptions.getFilter() != null) {
+			list.add(new NameValuePair("filter", filterOptions.getFilter().toString()));
+		}
+		
+		return list;
 	}
 }
