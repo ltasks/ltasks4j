@@ -200,16 +200,16 @@ public class LtasksNameFinderClient extends BaseClient {
 				+ "<p id='b'>Maria se encontrará com José na Bahia.</p>"
 				+ "</div>" + "</body>" + "</html>";
 		System.out.println("Will annotate a HTML: " + data);
-		HtmlFilterOptions options = new HtmlFilterOptions();
-		options.setFilter(HtmlFilter.none);
-		// lets select only the div
-		options.setInclude(Collections.singletonList(new SimpleXPath("div",
-				"class", "anId")));
-		// but exclude the paragraph with id a. We could create the list and the
-		// object here, but lets try using the SimpleXPath parser
-		options.setExclude(SimpleXPath.parse("//p[@id='a']"));
+HtmlFilterOptions options = new HtmlFilterOptions();
+options.setFilter(HtmlFilter.none);
+// lets select only the div
+options.setInclude(Collections.singletonList(new SimpleXPath("div",
+		"class", "anId")));
+// but exclude the paragraph with id a. We could create the list and the
+// object here, but lets try using the SimpleXPath parser
+options.setExclude(SimpleXPath.parse("//p[@id='a']"));
 
-		result = client.processHtml(data, options);
+result = client.processHtml(data, options);
 
 		System.out.println("Vamos tentar acessar os resultados");
 

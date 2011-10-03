@@ -42,7 +42,7 @@ O ltasks4j requer a biblioteca Apache HTTP Client, que pode ser [obtida aqui](ht
 <dependency>
 	<groupId>com.ltasks</groupId>
 	<artifactId>ltasks4j</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 </dependency>
 ```
 
@@ -100,6 +100,31 @@ if (result.isProcessedOk()) {
 			.println("Houve um erro! Vamos tentar obter a mensagem de erro.");
 	System.out.println("Mensagem do servidor: " + result.getMessage());
 }
+```
+
+* Os métodos `processUrl` e `processHtml` aceitam um argumento do tipo `HtmlFilterOptions`. Exemplo:
+
+```java
+HtmlFilterOptions options = new HtmlFilterOptions();
+
+// vamos selecionar apenas o div (e filhos) que tenha o atributo class com valor anId
+// setInclude aceita uma lista, aqui crio uma lista só com um elemento.
+options.setInclude(Collections.singletonList(new SimpleXPath("div",
+		"class", "anId")));
+		
+// vamos excluir o parágrafo cujo id seja "a". Poderíamos criar a lista como fizemos 
+// no include, mas para ilustrar vamos usar o SimpleXPath.parse(String), que aceita
+// uma query XPath simplificada no estilo LTasks e devolve uma lista de SimpleXPath
+options.setExclude(SimpleXPath.parse("//p[@id='a']"));
+
+// Com HtmlFilter.none todos os elementos resultantes do include e exclude serão
+// incluídos. Outras opções como HtmlFilter.standart e HtmlFilter.article podem 
+// ser usadas para tentar automaticamente selecionar apenas os elementos mais 
+// relevantes.
+options.setFilter(HtmlFilter.none);
+
+// finalmente efetuamos a chamada
+result = client.processHtml(data, options);
 ```
 
 Copyright
